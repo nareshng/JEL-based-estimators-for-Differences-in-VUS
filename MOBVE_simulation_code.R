@@ -1,5 +1,5 @@
 ## ============================================================================
-## Corrected simulation for the difference of two dependent VUS values
+## Simulation for the difference of two dependent VUS values
 ## Marshall-Olkin bivariate exponential model (MOBVE)
 ##
 ## Methods:
@@ -7,14 +7,10 @@
 ##   2. Normal approximation with stratified jackknife variance
 ##   3. Kernel-smoothed bootstrap percentile confidence interval
 ##
-## Run this file directly in RStudio. Set OUTPUT_DIR below if required.
 ##
-## IMPORTANT: this code evaluates the stated procedures. The chi-square cutoff
-## used for JEL still requires a correct Wilks theorem under the assumptions of
-## the manuscript; simulation code cannot replace that proof.
 ## ============================================================================
 
-## ----------------------------- user controls -------------------------------
+
 
 OUTPUT_DIR <- getwd()
 
@@ -27,16 +23,13 @@ GRID_LEN_JEL <- 401L
 ## Set to TRUE for a small smoke test before the full run.
 QUICK_TEST <- FALSE
 
-## Retain replication-level results in the Excel workbook. They are always
-## retained in scenario checkpoint files, irrespective of this option.
+
 KEEP_REPLICATION_RESULTS <- TRUE
 
-## Reuse a completed scenario only when its saved configuration signature
-## exactly matches the current configuration.
+
 RESUME_FROM_CHECKPOINTS <- TRUE
 
-## During a smoke test, stop at the first unexpected error. During a full run,
-## record the error as a failed replication and continue.
+
 FAIL_FAST <- QUICK_TEST
 
 if (QUICK_TEST) {
@@ -62,7 +55,7 @@ CHECKPOINT_DIR <- file.path(
   paste0("VUS_MOBVE_checkpoints_", RUN_TAG)
 )
 
-## ----------------------------- package and RNG setup -----------------------
+
 
 need_pkg <- function(pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
@@ -213,7 +206,7 @@ collapse_intervals <- function(intervals, digits = 12L) {
 }
 
 ## Separate deterministic data and bootstrap seeds ensure that changing BOOT
-## or method order does not change the generated datasets.
+
 make_replication_seed <- function(
     setting_id,
     design_id,
@@ -245,7 +238,7 @@ make_replication_seed <- function(
   as.integer(seed_value)
 }
 
-## ----------------------------- U-statistic helpers --------------------------
+## ----------------------------- U-statistic --------------------------
 
 trip_count <- function(x, y, z) {
   if (length(x) == 0L || length(y) == 0L || length(z) == 0L ||
@@ -430,7 +423,7 @@ kernel_ci <- function(
   )
 }
 
-## ----------------------------- stratified jackknife ------------------------
+## ----------------------------- jackknife ------------------------
 
 jackknife_values_stratified <- function(x, y, z) {
   n1 <- nrow(x)
@@ -496,9 +489,7 @@ normal_ci_from_jackknife <- function(jackknife, level = 0.95) {
     group_variances[2] / n2 +
     group_variances[3] / n3
 
-  ## A zero estimated variance violates the nondegeneracy condition for the
-  ## normal approximation. It is reported rather than silently treated as a
-  ## valid zero-width interval.
+
   valid_variance <- is.finite(variance_estimate) && variance_estimate > 1e-14
 
   if (!valid_variance) {
@@ -547,9 +538,7 @@ pooled_jackknife_from_stratified <- function(jackknife) {
 
   if (total_n <= 3L) stop("The pooled sample size must exceed three.")
 
-  ## Exact fixed-kernel pooled pseudo-values for a degree-(1,1,1)
-  ## three-sample U-statistic. This transformation remains valid when the
-  ## group sizes are unequal.
+  
   pooled_x <- (total_n / (total_n - 3)) * (
     ((total_n - 1) / n1) * jackknife$vx - 2 * jackknife$U0
   )
@@ -604,7 +593,7 @@ el_neg2log <- function(v, a, theta) {
   estimating_values <- v - a * theta
   numerical_scale <- max(1, max(abs(v)), max(abs(a * theta)))
 
-  ## Uniform empirical weights satisfy the constraint exactly in this case.
+  
   if (max(abs(estimating_values)) <= 1e-12 * numerical_scale) {
     return(0)
   }
@@ -740,9 +729,7 @@ jel_confidence_set_from_jackknife <- function(
   degenerate_at_estimate <-
     max(abs(estimating_at_estimate)) <= 1e-12 * estimate_scale
 
-  ## The likelihood calculation itself defines LR(U0)=0 in the all-zero case,
-  ## but the chi-square calibration requires nondegeneracy. We therefore report
-  ## this replication as invalid instead of silently using a zero-width set.
+  
   if (degenerate_at_estimate) {
     return(list(
       intervals = matrix(numeric(0), ncol = 2L),
@@ -766,8 +753,7 @@ jel_confidence_set_from_jackknife <- function(
     is.finite(value) && value <= critical_value + 1e-10
   }
 
-  ## Inserting U0 prevents a false empty set when the accepted central
-  ## component is narrower than the base grid spacing.
+  
   grid <- sort(unique(c(
     seq(lower, upper, length.out = grid_len),
     min(max(estimate, lower), upper)
@@ -933,9 +919,8 @@ vus_exponential <- function(rate_x, rate_y, rate_z) {
     stop("Marginal exponential rates must be finite and positive.")
   }
 
-  ## P(X < Y < Z) for independent exponential variables from the three
-  ## samples. Dependence between the two markers within a sample does not alter
-  ## either marginal VUS; it affects their covariance and hence interval width.
+  ## P(X < Y < Z) for independent exponential variables
+  
   (rate_x * rate_y) /
     ((rate_z + rate_y) * (rate_z + rate_y + rate_x))
 }
