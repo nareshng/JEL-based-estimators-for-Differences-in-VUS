@@ -1,7 +1,7 @@
 
 
 ## =========================
-## Efficient rewrite (R)
+## Real Data Analysis Code
 ## =========================
 
 library(readxl)
@@ -10,8 +10,8 @@ library(emplik)
 start.time <- Sys.time()
 
 ## ---- Load data
-setwd("/Users/gargn2/Downloads")
-dat <- read_excel("Data (1).xlsx", sheet="Sheet1")
+setwd("/Users/")
+dat <- read_excel("Data.xlsx", sheet="Sheet1")
 
 
 
@@ -97,7 +97,7 @@ theta_hat
 
 
 ## ==========================================================
-## 2) Fast delete-1 jackknife theta_{-l} for all observations
+## 2) jackknife theta_{-l} for all observations
 ## ==========================================================
 theta_minus <- numeric(n)
 
@@ -147,8 +147,7 @@ CI99[c("Low","Up")]
 
 
 ## ==========================================================
-## 4) Normal CI variance estimate (no magic indices)
-##    Group-wise jackknife pseudo-values
+## 4) Normal CI variance estimate 
 ## ==========================================================
 v_x <- n1 * theta_hat - (n1 - 1) * theta_minus[1:n1]
 v_y <- n2 * theta_hat - (n2 - 1) * theta_minus[(n1 + 1):(n1 + n2)]
@@ -168,8 +167,7 @@ c(
 
 
 ## ==========================================================
-## 5) Bootstrap kernel-based method (reduced from O(n1*n2*n3)
-##    to O(n1*n2 + n2*n3) per replicate by algebraic factorization
+## 5) Bootstrap kernel-based method
 ## ==========================================================
 silverman_h <- function(v) {
   0.9 * min(sd(v), IQR(v)/1.34) * length(v)^(-0.2)
