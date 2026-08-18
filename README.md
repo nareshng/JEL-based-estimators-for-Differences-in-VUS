@@ -9,9 +9,7 @@ The volume under the ROC surface (VUS) and its high-dimensional extension, the h
 
 This repository contains the R code used to compare confidence intervals for the difference between two volumes under the ROC surface,
 
-[
-\theta = \mathrm{VUS}_1-\mathrm{VUS}_2.
-]
+$\theta = \mathrm{VUS}_1-\mathrm{VUS}_2.$
 
 The methods considered are:
 
@@ -73,11 +71,6 @@ Rscript MOBVE_simulation_code.R
 Rscript "Data analysis_Code.R"
 ```
 
-The Pareto script produces:
-
-```text
-VUS_FGMPM_Pareto_simulation_corrected_full.xlsx
-```
 
 The workbook contains parameter settings, true values, sample sizes, scenario summaries, status codes, and replication-level results.
 
