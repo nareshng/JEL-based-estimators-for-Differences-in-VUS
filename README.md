@@ -78,4 +78,4 @@ The workbook contains parameter settings, true values, sample sizes, scenario su
 
 The zero or near-zero kernel coverage under `P5` is a genuine simulation result, not missing output. All bootstrap intervals were successfully computed. The poor coverage is caused by severe smoothing bias under the extremely heavy-tailed Pareto distributions.
 
-The finalized Marshall–Olkin results will be documented after verification of the corresponding output workbook.
+
