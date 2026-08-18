@@ -9,7 +9,7 @@ The volume under the ROC surface (VUS) and its high-dimensional extension, the h
 
 This repository contains the R code used to compare confidence intervals for the difference between two volumes under the ROC surface,
 
-$\theta = \mathrm{VUS}_1-\mathrm{VUS}_2.$
+$$\theta = \mathrm{VUS}_1-\mathrm{VUS}_2.$$
 
 The methods considered are:
 
