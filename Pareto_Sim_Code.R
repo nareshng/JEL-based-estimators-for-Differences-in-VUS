@@ -95,7 +95,7 @@ RNGkind(
   sample.kind = "Rejection"
 )
 
-## ----------------------------- validation helpers --------------------------
+## ----------------------------- validation --------------------------
 
 assert_scalar_integer <- function(x, name, lower = 1L) {
   if (length(x) != 1L ||
@@ -212,7 +212,7 @@ make_replication_seed <- function(setting_id, design_id, replication_id, stream)
   as.integer(seed_value)
 }
 
-## ----------------------------- U-statistic helpers --------------------------
+## ----------------------------- U-statistic  --------------------------
 
 trip_count <- function(x, y, z) {
   if (anyNA(x) || anyNA(y) || anyNA(z) ||
@@ -453,6 +453,7 @@ normal_ci_from_jackknife <- function(jk, level = 0.95) {
   
   ## A zero estimated variance gives a degenerate point interval and does not
   ## satisfy the nondegeneracy conditions used for the normal approximation.
+  
   valid <- is.finite(variance_estimate) && variance_estimate > 1e-14
   
   if (!valid) {
@@ -501,8 +502,8 @@ pooled_jackknife_from_stratified <- function(jk) {
     stop("The pooled sample size must exceed three.")
   }
   
-  ## Exact algebraic transformation of the stratified pseudo-values into the
-  ## fixed-kernel pooled pseudo-values for degree (1,1,1).
+  ## Exact algebraic transformation 
+  
   pooled_x <- (n / (n - 3)) * (
     ((n - 1) / n1) * jk$vx - 2 * jk$U0
   )
@@ -562,6 +563,7 @@ el_neg2log <- function(v, a, theta) {
   
   ## If every estimating equation is zero, uniform empirical weights satisfy
   ## the constraint and -2 log R(theta) is exactly zero.
+  
   if (max(abs(g)) <= 1e-12 * scale_g) {
     return(0)
   }
@@ -957,7 +959,7 @@ vus_pareto_exact <- function(lx, ax, ly, ay, lz, az) {
     )
   }
   
-  ## For t >= max(lower_limit,lz), S_Z(t) = (lz/t)^az.
+  
   tail_limit <- max(lower_limit, lz)
   
   result <- result + ay * ly^ay * lz^az * (
@@ -974,8 +976,7 @@ vus_pareto_exact <- function(lx, ax, ly, ay, lz, az) {
   min(max(result, 0), 1)
 }
 
-## Copula parameters do not enter the true marginal VUS values. They affect
-## dependence between the two VUS estimators and therefore affect CI behavior.
+## Copula parameters do not enter the true marginal VUS values. 
 true_fgmpm_values <- function(
     lx1, lx2, ax1, ax2,
     ly1, ly2, ay1, ay2,
@@ -1003,8 +1004,8 @@ pareto_settings <- data.frame(
     "extreme_stress"
   ),
   selection_basis = c(
-    "Prespecified symmetric regular case; not selected from simulation results",
-    "Prespecified separated-target regular case; not selected from simulation results",
+    "Prespecified symmetric regular case",
+    "Prespecified separated-target regular case",
     "Prespecified heterogeneous heavy-tail stress case",
     "Prespecified heterogeneous tail/dependence stress case",
     "Prespecified extreme heavy-tail/dependence stress case"
@@ -1128,9 +1129,7 @@ run_one_dataset <- function(
     grid_len_jel,
     bootstrap_seed
 ) {
-  ## A numerical error in one method must not erase valid results from an
-  ## independent method. In a quick test the error is rethrown for debugging;
-  ## in a full run it is recorded with method status code 99.
+  
   method_errors <- character(0)
   
   run_timed_method <- function(method, expression, fallback) {
