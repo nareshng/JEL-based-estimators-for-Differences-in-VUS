@@ -1,5 +1,4 @@
 ## ============================================================================
-## Corrected simulation for the difference of two dependent VUS values
 ## Marshall-Olkin bivariate exponential model (MOBVE)
 ##
 ## Methods:
@@ -7,14 +6,9 @@
 ##   2. Normal approximation with stratified jackknife variance
 ##   3. Kernel-smoothed bootstrap percentile confidence interval
 ##
-## Run this file directly in RStudio. Set OUTPUT_DIR below if required.
-##
-## IMPORTANT: this code evaluates the stated procedures. The chi-square cutoff
-## used for JEL still requires a correct Wilks theorem under the assumptions of
-## the manuscript; simulation code cannot replace that proof.
 ## ============================================================================
 
-## ----------------------------- user controls -------------------------------
+
 
 OUTPUT_DIR <- getwd()
 
@@ -25,9 +19,7 @@ CONFIDENCE_LEVELS <- c(0.90, 0.95)
 MC_COVERAGE_INTERVAL_LEVEL <- 0.95
 GRID_LEN_JEL <- 401L
 
-## Descriptive metadata for the single prespecified simulation suite. These
-## labels are deliberately kept outside mobve_settings so that metadata-only
-## edits do not invalidate otherwise compatible replication checkpoints.
+## Descriptive metadata for the single prespecified simulation suite. 
 SCENARIO_SUITE <- "Targeted nonzero-theta MOBVE grid"
 SCENARIO_PROFILE <- paste0(
   "Four prespecified nonzero contrasts (0.95, -0.95, 0.50, -0.50) crossed ",
@@ -426,7 +418,7 @@ kernel_ci <- function(
 
   alpha <- 1 - level
 
-  ## type = 1 implements the manuscript's order-statistic percentile rule.
+  
   interval <- as.numeric(stats::quantile(
     bootstrap_statistics,
     probs = c(alpha / 2, 1 - alpha / 2),
@@ -449,7 +441,7 @@ kernel_ci <- function(
   )
 }
 
-## ----------------------------- stratified jackknife ------------------------
+## ----------------------------- jackknife ------------------------
 
 jackknife_values_stratified <- function(x, y, z) {
   n1 <- nrow(x)
@@ -516,8 +508,7 @@ normal_ci_from_jackknife <- function(jackknife, level = 0.95) {
     group_variances[3] / n3
 
   ## A zero estimated variance violates the nondegeneracy condition for the
-  ## normal approximation. It is reported rather than silently treated as a
-  ## valid zero-width interval.
+  ## normal approximation. 
   valid_variance <- is.finite(variance_estimate) && variance_estimate > 1e-14
 
   if (!valid_variance) {
@@ -567,8 +558,7 @@ pooled_jackknife_from_stratified <- function(jackknife) {
   if (total_n <= 3L) stop("The pooled sample size must exceed three.")
 
   ## Exact fixed-kernel pooled pseudo-values for a degree-(1,1,1)
-  ## three-sample U-statistic. This transformation remains valid when the
-  ## group sizes are unequal.
+  ## three-sample U-statistic. 
   pooled_x <- (total_n / (total_n - 3)) * (
     ((total_n - 1) / n1) * jackknife$vx - 2 * jackknife$U0
   )
@@ -760,8 +750,7 @@ jel_confidence_set_from_jackknife <- function(
     max(abs(estimating_at_estimate)) <= 1e-12 * estimate_scale
 
   ## The likelihood calculation itself defines LR(U0)=0 in the all-zero case,
-  ## but the chi-square calibration requires nondegeneracy. We therefore report
-  ## this replication as invalid instead of silently using a zero-width set.
+  ## but the chi-square calibration requires nondegeneracy. 
   if (degenerate_at_estimate) {
     return(list(
       intervals = matrix(numeric(0), ncol = 2L),
@@ -786,7 +775,7 @@ jel_confidence_set_from_jackknife <- function(
   }
 
   ## Inserting U0 prevents a false empty set when the accepted central
-  ## component is narrower than the base grid spacing.
+
   grid <- sort(unique(c(
     seq(lower, upper, length.out = grid_len),
     min(max(estimate, lower), upper)
@@ -952,8 +941,7 @@ vus_exponential <- function(rate_x, rate_y, rate_z) {
   }
 
   ## P(X < Y < Z) for independent exponential variables from the three
-  ## samples. Dependence between the two markers within a sample does not alter
-  ## either marginal VUS; it affects their covariance and hence interval width.
+  ## samples. 
   (rate_x * rate_y) /
     ((rate_z + rate_y) * (rate_z + rate_y + rate_x))
 }
@@ -1881,10 +1869,7 @@ validate_checkpoint <- function(
     stop("Checkpoint is not a recognized MOBVE checkpoint object.")
   }
 
-  ## Retain the script checksum for auditability, but do not reject a
-  ## checkpoint solely because an output-only correction changed that
-  ## checksum. Computational compatibility is enforced by the algorithm
-  ## signature together with all simulation controls below.
+  
   saved_configuration <- checkpoint$configuration
   current_configuration <- configuration
   saved_configuration$script_md5 <- NULL
@@ -2357,8 +2342,7 @@ run_self_tests <- function() {
   }
 
   ## Exercise a strongly unbalanced design for which one centering coefficient
-  ## is negative. This checks the mixed-sign path used by the confidence-set
-  ## inversion, although it does not replace a full grid-sensitivity study.
+  ## is negative. 
   x_mixed <- cbind(
     seq(0.05, 0.25, length.out = 3),
     seq(0.15, 0.35, length.out = 3)
